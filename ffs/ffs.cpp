@@ -25,12 +25,12 @@ int __rt_ffs_puny(rt_int32_t value) {
     //    position += 16;
     //    value >>= 16;
     //}
-    //if ((value & 0xFF) == 0)
-    //{
-    //    // is lower 8bit 0
-    //    position += 8;
-    //    value >>= 8;
-    //}
+    if ((value & 0xFF) == 0)
+    {
+       // is lower 8bit 0
+       position += 8;
+       value >>= 8;
+    }
     if ((value & 0xF) == 0)
     {
         // is lower 4bit 0
@@ -148,9 +148,9 @@ void Measure(int (*ffs)(int), const char * ffs_name)
     auto start = std::chrono::high_resolution_clock::now();
 
     size_t c0 = 0, c = 0;
-    for (auto c0 = 0; c0 < 0xFFFFFF; c0++) {
+    for (auto c0 = 0; c0 < 0xFFFF; c0++) {
         // Code to measure
-        for (auto i = 0; i < 0xFF; i++) {
+        for (auto i = 0; i < 0xFFFF; i++) {
             int x = ffs(i);
 
             c++;
@@ -164,7 +164,7 @@ void Measure(int (*ffs)(int), const char * ffs_name)
     // Calculate the duration
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-    std::printf("%s execute %lld %lld times", ffs_name, c0, c);
+    std::printf("%s execute %ld %ld times", ffs_name, c0, c);
     std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
 }
 
