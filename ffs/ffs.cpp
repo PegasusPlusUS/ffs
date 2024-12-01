@@ -18,13 +18,13 @@ int __rt_ffs_puny(rt_int32_t value) {
         return 0; // 0 means no bit 1
     }
 
-    //// search half range
-    //if ((value & 0xFFFF) == 0)
-    //{
-    //    // is lower 16bit 0
-    //    position += 16;
-    //    value >>= 16;
-    //}
+    // search half range
+    if ((value & 0xFFFF) == 0)
+    {
+       // is lower 16bit 0
+       position += 16;
+       value >>= 16;
+    }
     if ((value & 0xFF) == 0)
     {
        // is lower 8bit 0
@@ -148,9 +148,10 @@ void Measure(int (*ffs)(int), const char * ffs_name)
     auto start = std::chrono::high_resolution_clock::now();
 
     size_t c0 = 0, c = 0;
-    for (auto c0 = 0; c0 < 0xFFFF; c0++) {
+    for (auto e0 = 0; e0 < 0x1; e0++) {
         // Code to measure
-        for (auto i = 0; i < 0xFFFF; i++) {
+        c = 0;
+        for (uint64_t i = 0; i < 0xFFFFFFFF; i++) {
             int x = ffs(i);
 
             c++;
