@@ -151,7 +151,7 @@ void Measure(int (*ffs)(int), const char * ffs_name)
     for (auto e0 = 0; e0 < 0x1; e0++) {
         // Code to measure
         c = 0;
-        for (uint64_t i = 0; i < 0xFFFFFFFF; i++) {
+        for (uint32_t i = 0; i < 0xFFFFFFFF; i++) {
             int x = ffs(i);
 
             c++;
@@ -165,7 +165,7 @@ void Measure(int (*ffs)(int), const char * ffs_name)
     // Calculate the duration
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-    std::printf("%s execute %ld %ld times", ffs_name, c0, c);
+    std::printf("%s execute %zd %zd times", ffs_name, c0, c);
     std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
 }
 
