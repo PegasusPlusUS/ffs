@@ -198,16 +198,10 @@ static void measure(int (*ffs)(int), const char * ffs_name)
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
 
-    size_t c0 = 0, c = 0;
-    for (auto e0 = 0; e0 < 0x1; e0++) {
-        // Code to measure
-        c = 0;
-        for (uint32_t i = 0; i < 0xFFFFFFFF; i++) {
-            int x = ffs(i);
-
-            c++;
-        }
-        c0++;
+    // Code to measure
+    int x;
+    for (uint32_t i = 0; i < 0xFFFFFFFF; i++) {
+        x = ffs(i);
     }
 
     // Record end time
@@ -216,8 +210,8 @@ static void measure(int (*ffs)(int), const char * ffs_name)
     // Calculate the duration
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-    std::printf("%s execute %zd %zd times", ffs_name, c0, c);
-    std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
+    std::printf("%s ", ffs_name);
+    std::cout << "execution time: " << duration.count() << " microseconds" << std::endl;
 }
 
 static bool verify()
