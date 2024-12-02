@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstdint>
 #include <chrono>
-#include "ffs.h"
 
 using rt_int32_t = int32_t;
 using rt_uint32_t = uint32_t;
@@ -193,16 +192,8 @@ int __rt_ffs_builtin(rt_int32_t value) {
 #define __rt_ffs_builtin __rt_ffs_puny
 #endif
 
-int main()
-{
-    Measure(__rt_ffs, "ffs");
-    Measure(__rt_ffs_tiny, "tiny_ffs");
-    Measure(__rt_ffs_puny, "puny_ffs");
 
-    Measure(__rt_ffs_builtin, "builtin_ffs");
-}
-
-void Measure(int (*ffs)(int), const char * ffs_name)
+void measure(int (*ffs)(int), const char * ffs_name)
 {
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
@@ -227,6 +218,39 @@ void Measure(int (*ffs)(int), const char * ffs_name)
 
     std::printf("%s execute %zd %zd times", ffs_name, c0, c);
     std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
+}
+
+void verify()
+{
+    // Record start time
+    auto start = std::chrono::high_resolution_clock::now();
+
+    for (uint32_t i = 0; i < 0xFFFFFFFF; i++) {
+        int r1 = __rt_ffs(i);
+        int r2 = __rt_ffs_tiny(i);
+        int r3 = __rt_ffs_puny(i);
+        int r4 = __rt_ffs_builtin(i);
+
+        if (r1 != r2 || r2 != r3 || r3 != r4) {
+            std::printf("Verification failed at %d, %d, %d, %d, %d.\n", i, r1, r2, r3, r4);
+        }
+    }
+
+    // Record end time
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // Calculate the duration
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+    std::printf("Verification execution time: %lld microseconds\n", duration.count());
+}
+
+int main()
+{
+    measure(__rt_ffs, "ffs");
+    measure(__rt_ffs_tiny, "tiny_ffs");
+    measure(__rt_ffs_puny, "puny_ffs");
+    measure(__rt_ffs_builtin, "builtin_ffs");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
