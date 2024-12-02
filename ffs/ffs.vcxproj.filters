@@ -18,5 +18,11 @@
     <ClCompile Include="ffs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\rt-thread\src\kservice.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\rt-thread\src\Kconfig" />
   </ItemGroup>
 </Project>

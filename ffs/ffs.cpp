@@ -180,6 +180,17 @@ static int __rt_ffs(int value)
 #elif defined(__GNUC__) || defined(__clang__)
 #define __HAS_BUILTIN_CTZ__
 #define CTZ(x) ((x) ? 1 + __builtin_ctz(x) : 0)
+
+#elif defined(__ARMCC_VERSION)  // Keil ARM Compiler
+#include "arm_math.h"
+#define __HAS_BUILTIN_CTZ__
+#define CTZ(x) ((x) ? 1 + __CLZ(__RBIT(x)) : 0)
+
+#elif defined(__ICCARM__)     // IAR ARM Compiler
+#include <intrinsics.h>
+#define __HAS_BUILTIN_CTZ__
+#define CTZ(x) ((x) ? 1 + __CLZ(__RBIT(x)) : 0)
+
 #else
 #message "Don't know if compiler has builtin ctz"
 #endif

@@ -129,7 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\rt-thread\src\kservice.c" />
     <ClCompile Include="ffs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\rt-thread\src\Kconfig" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
