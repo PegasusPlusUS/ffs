@@ -9,7 +9,7 @@ using rt_int32_t = int32_t;
 using rt_uint32_t = uint32_t;
 using rt_uint8_t = uint8_t;
 
-int __rt_ffs_puny(rt_int32_t value) {
+static int __rt_ffs_puny(rt_int32_t value) {
     int position = 1; // position start from 1
 
     if (value == 0)
@@ -72,7 +72,7 @@ const rt_uint8_t __lowest_bit_bitmap_tiny[] =
  * @return return the index of the first bit set. If value is 0, then this function
  * shall return 0.
  */
-int __rt_ffs_tiny(int value)
+static int __rt_ffs_tiny(int value)
 {
     return __lowest_bit_bitmap_tiny[(rt_uint32_t)(value & (value - 1) ^ value) % 37];
 }
@@ -109,7 +109,7 @@ const rt_uint8_t __lowest_bit_bitmap[] =
  * @return Return the index of the first bit set. If value is 0, then this function
  *         shall return 0.
  */
-int __rt_ffs(int value)
+static int __rt_ffs(int value)
 {
     if (value == 0)
     {
@@ -193,7 +193,7 @@ int __rt_ffs_builtin(rt_int32_t value) {
 #endif
 
 
-void measure(int (*ffs)(int), const char * ffs_name)
+static void measure(int (*ffs)(int), const char * ffs_name)
 {
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
@@ -220,7 +220,7 @@ void measure(int (*ffs)(int), const char * ffs_name)
     std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
 }
 
-void verify()
+static void verify()
 {
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
@@ -247,6 +247,8 @@ void verify()
 
 int main()
 {
+    verify();
+
     measure(__rt_ffs, "ffs");
     measure(__rt_ffs_tiny, "tiny_ffs");
     measure(__rt_ffs_puny, "puny_ffs");
