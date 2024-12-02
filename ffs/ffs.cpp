@@ -177,17 +177,17 @@ int __rt_ffs(int value)
 #if defined(_MSC_VER)
 #define __HAS_BUILTIN_CTZ__
 #include <intrin.h>
-#define CTZ(x) ([](unsigned int val) -> int { unsigned long pos; return _BitScanForward(&pos, val) ? pos : -1; })(x)
+#define CTZ(x) ([](unsigned int val) -> int { unsigned long pos; return val ? 1 + _BitScanForward(&pos, val) : 0; })(x)
 #elif defined(__GNUC__) || defined(__clang__)
 #define __HAS_BUILTIN_CTZ__
-#define CTZ(x) ((x) ? __builtin_ctz(x) : -1)
+#define CTZ(x) ((x) ? 1 + __builtin_ctz(x) : 0)
 #else
 #message "Don't know if compiler has builtin ctz"
 #endif
 
 #ifdef __HAS_BUILTIN_CTZ__
 int __rt_ffs_builtin(rt_int32_t value) {
-    return 1 + CTZ(value);
+    return CTZ(value);
 }
 #else
 #define __rt_ffs_builtin __rt_ffs_puny
