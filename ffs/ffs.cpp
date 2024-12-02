@@ -176,7 +176,7 @@ static int __rt_ffs(int value)
 #if defined(_MSC_VER)
 #define __HAS_BUILTIN_CTZ__
 #include <intrin.h>
-#define CTZ(x) ([](unsigned int val) -> int { unsigned long pos; return val ? 1 + _BitScanForward(&pos, val) : 0; })(x)
+#define CTZ(x) ([](unsigned int val) -> int { unsigned long pos; return val ? _BitScanForward(&pos, val), 1 + pos : 0; })(x)
 #elif defined(__GNUC__) || defined(__clang__)
 #define __HAS_BUILTIN_CTZ__
 #define CTZ(x) ((x) ? 1 + __builtin_ctz(x) : 0)
@@ -220,8 +220,10 @@ static void measure(int (*ffs)(int), const char * ffs_name)
     std::cout << " execution time: " << duration.count() << " microseconds" << std::endl;
 }
 
-static void verify()
+static bool verify()
 {
+    bool result = true;
+
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -233,6 +235,8 @@ static void verify()
 
         if (r1 != r2 || r2 != r3 || r3 != r4) {
             std::printf("Verification failed at %d, %d, %d, %d, %d.\n", i, r1, r2, r3, r4);
+            result = false;
+            break;
         }
     }
 
@@ -243,16 +247,24 @@ static void verify()
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
     std::printf("Verification execution time: %lld microseconds\n", duration.count());
+
+    return result;
 }
 
 int main()
 {
-    verify();
+    //for (auto i = 0; i < 16; i++) {
+    //    unsigned long pos = 0;
+    //    unsigned int r = _BitScanForward(&pos, i);
+    //    std::printf("%d: %d %d %d\n", i, __rt_ffs_builtin(i), pos, r);
+    //}
 
-    measure(__rt_ffs, "ffs");
-    measure(__rt_ffs_tiny, "tiny_ffs");
-    measure(__rt_ffs_puny, "puny_ffs");
-    measure(__rt_ffs_builtin, "builtin_ffs");
+    if (verify()) {
+        measure(__rt_ffs, "ffs");
+        measure(__rt_ffs_tiny, "tiny_ffs");
+        measure(__rt_ffs_puny, "puny_ffs");
+        measure(__rt_ffs_builtin, "builtin_ffs");
+    }
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
