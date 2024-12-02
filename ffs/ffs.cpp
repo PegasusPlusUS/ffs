@@ -135,11 +135,71 @@ int __rt_ffs(int value)
     return __lowest_bit_bitmap[(value & 0xff000000) >> 24] + 25;
 }
 
+//#if defined(__has_builtin)
+//#if __has_builtin(__builtin_ctz)
+//#define HAS_BUILTIN_CTZ 1
+//#else
+//#define HAS_BUILTIN_CTZ 0
+//#endif
+//#else
+//// If __has_builtin is not available, assume GCC or Clang older than the feature.
+//#if defined(__GNUC__) || defined(__clang__)
+//#define HAS_BUILTIN_CTZ 1
+//#else
+//#define HAS_BUILTIN_CTZ 0
+//#endif
+//#endif
+//
+//#ifdef HAS_BUILTIN_CTZ
+//int __rt_ffs_builtin(int value) {
+//#if defined(__GNUC__) || defined(__clang__)
+//    //if (value ^ (value & (value - 1))) { // Ensure only one bit is set
+//    if (value) {
+//        return 1 + __builtin_ctz(value);
+//    }
+//    else {
+//        return 0;
+//    }
+//#else
+//    if (value) {
+//        unsigned long position;
+//        _BitScanForward(&position, value);
+//
+//        return 1 + position;
+//    }
+//    else {
+//        return 0;
+//    }
+//#endif
+//}
+//#endif
+
+#if defined(_MSC_VER)
+#define __HAS_BUILTIN_CTZ__
+#include <intrin.h>
+#define CTZ(x) ([](unsigned int val) -> int { unsigned long pos; return _BitScanForward(&pos, val) ? pos : -1; })(x)
+#elif defined(__GNUC__) || defined(__clang__)
+#define __HAS_BUILTIN_CTZ__
+#define CTZ(x) ((x) ? __builtin_ctz(x) : -1)
+#else
+#message "Don't know if compiler has builtin ctz"
+#endif
+
+#ifdef __HAS_BUILTIN_CTZ__
+int __rt_ffs_builtin(rt_int32_t value) {
+    return 1 + CTZ(value);
+}
+#else
+#define __rt_ffs_builtin __rt_ffs_puny
+#endif
+
 int main()
 {
     Measure(__rt_ffs, "ffs");
     Measure(__rt_ffs_tiny, "tiny_ffs");
     Measure(__rt_ffs_puny, "puny_ffs");
+
+    Measure(__rt_ffs_builtin, "builtin_ffs");
 }
 
 void Measure(int (*ffs)(int), const char * ffs_name)
