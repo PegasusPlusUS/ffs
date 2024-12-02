@@ -246,7 +246,11 @@ static bool verify()
     // Calculate the duration
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
+#if defined(_MSC_VER)
+    std::printf("Verification execution time: %lld microseconds\n", duration.count());
+#else
     std::printf("Verification execution time: %ld microseconds\n", duration.count());
+#endif
 
     return result;
 }
